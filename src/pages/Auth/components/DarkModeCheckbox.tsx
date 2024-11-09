@@ -1,5 +1,5 @@
-import { Checkbox } from '@/components/ui/checkbox';
 import { useEffect, useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export const DarkModeCheckbox = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -24,11 +24,16 @@ export const DarkModeCheckbox = () => {
   }, []);
 
   return (
-    <div className="flex items-center space-x-2">
-      <Checkbox id="darkMode" onCheckedChange={checked => toggleDarkMode(!!checked)} checked={isDarkMode} />
+    <div className="flex items-center space-x-2 text-[#121212] dark:text-white">
+      <Checkbox
+        id="darkMode"
+        className="dark:bg-transparent border-none text-[#121212] dark:text-white bg-[#121212]"
+        onCheckedChange={checked => toggleDarkMode(!!checked)}
+        checked={isDarkMode}
+      />
       <label
         htmlFor="darkMode"
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-2xl font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
       >
         Enable Dark Mode
       </label>
