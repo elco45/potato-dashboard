@@ -48,3 +48,7 @@ export default tseslint.config({
   },
 })
 ```
+
+# External links
+* https://codesandbox.io/p/sandbox/fake-bsod-88k1g?file=%2Findex.html
+* https://codepen.io/FRADAR/pen/BaRoPJW
