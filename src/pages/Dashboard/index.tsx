@@ -1,21 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useSearchParams } from 'react-router-dom';
-import { Bsod } from './components/bsod';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Confetti from 'react-confetti';
-import potato from './assets/potato.gif';
+import { Bsod } from '@/pages/Dashboard/components/bsod';
+import potato from '@/assets/potato.gif';
+import potatoGg from '@/assets/potatoGG.gif';
+import potatoClap from '@/assets/potatoClap.gif';
+import potatoYes from '@/assets/potatoYes.gif';
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
+
   const transitionList = [
     { type: 'spring', stiffness: 300, damping: 20 },
     { type: 'intertia', velocity: 100 },
     { ease: 'linear', duration: 1 },
   ];
 
-  let [searchParams, _] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  const [xPos, setXpos] = useState(0);
-  const [yPos, setYpos] = useState(0);
+  const [xPos, setXpos] = useState(window.innerWidth / 2 - 150);
+  const [yPos, setYpos] = useState(window.innerHeight / 2 - 100);
   const [transition, setTransition] = useState<any>();
   const [isControlled, setIsController] = useState(false);
   const [windowDimensions] = useState({
@@ -25,9 +31,8 @@ export const Dashboard = () => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isBsod, setIsBsod] = useState(false);
-  const [loadingText, setLoadingText] = useState('Loading');
+  const [loadingText, setLoadingText] = useState('Loading...');
   const [isExploding, setIsExploding] = useState(false);
-  const [recycleConfetti, setRecycleConfetti] = useState(true);
   const [ctrlHint, setCtrlHint] = useState(0);
 
   const n = searchParams.get('n');
@@ -63,25 +68,24 @@ export const Dashboard = () => {
     if (isTimerActive && progress < 100) {
       const interval = setInterval(() => {
         setProgress(prev => Math.min(prev + 1, 100));
-      }, 10);
+      }, 40);
       if (progress == 50) {
-        setLoadingText('Building');
+        setLoadingText('Building...');
       }
       if (progress == 75) {
-        setLoadingText('Gathering Data');
+        setLoadingText('Gathering Data...');
       }
 
       return () => clearInterval(interval);
     } else if (progress >= 95) {
       if (isAuthorized) {
         setIsExploding(true);
-        setRecycleConfetti(false);
       } else {
         setIsBsod(true);
         setIsTimerActive(false);
       }
     }
-  }, [isTimerActive, progress]);
+  }, [isAuthorized, isTimerActive, progress]);
 
   useEffect(() => {
     if (n && parseInt(n!) > 0) {
@@ -101,6 +105,11 @@ export const Dashboard = () => {
 
   return (
     <div>
+      <div className="w-full flex justify-end bg-[#121212] py-4">
+        <button className="mx-8 text-lg cursor-pointer" onClick={() => navigate(`/${n ? '?n=1' : ''}`)}>
+          Logout
+        </button>
+      </div>
       {!isTimerActive && !isBsod && (
         <motion.button
           animate={{
@@ -110,22 +119,25 @@ export const Dashboard = () => {
           transition={transition}
           onMouseOver={onHoverAcceptButton}
           onClick={onClick}
-          className="absolute"
+          className="absolute p-4 cursor-pointer text-2xl"
         >
-          Accept T&C
+          Accept Terms & Conditions
         </motion.button>
       )}
 
-      {ctrlHint > 5 && !isTimerActive && !isBsod && (
-        <div className="h-screen flex items-center justify-center">
-          <div className="flex flex-col">
-            <div className="w-full flex justify-center">REMINDER: You have the "CTRL" of the UI</div>
+      <div className="h-screen flex items-center justify-center">
+        <div className="flex flex-col">
+          <div className="w-full flex justify-center">
+            {ctrlHint > 3 && !isTimerActive && !isBsod && (
+              <p className="text-2xl">
+                <strong>REMINDER:</strong> You are in "Control" of the UI
+              </p>
+            )}
           </div>
         </div>
-      )}
+        {isBsod && <Bsod />}
 
-      {isTimerActive && !isExploding && (
-        <div className="h-screen flex items-center justify-center">
+        {isTimerActive && !isExploding && (
           <div className="flex flex-col">
             <div className="w-full flex justify-center">
               <img className="w-80 h-80" src={potato} alt="loading..." />
@@ -142,17 +154,22 @@ export const Dashboard = () => {
             </div>
             <div className="mt-5 flex w-full justify-center">{loadingText}</div>
           </div>
-        </div>
-      )}
+        )}
 
-      {isBsod && <Bsod />}
-
-      {isExploding && (
-        <div>
-          <Confetti width={windowDimensions.width} height={windowDimensions.height} recycle={recycleConfetti} />
-          <div className="h-screen flex items-center justify-center">Positive message here</div>
-        </div>
-      )}
+        {isExploding && (
+          <div>
+            <Confetti width={windowDimensions.width} height={windowDimensions.height} />
+            <div className="h-screen flex flex-col items-center justify-center">
+              <p className="text-6xl animate-bounce">You are one in a million potatoes!</p>
+              <div className="">
+                <img src={potatoGg} className="w-[30vh]" />
+                <img src={potatoClap} className="w-[40vh]" />
+                <img src={potatoYes} className="w-[16vh]" />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

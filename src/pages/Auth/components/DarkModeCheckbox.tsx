@@ -1,8 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
+import { FlyController, SpiderController } from '@/pages/Auth/utils/bugsUtil';
+import { CheckBoxToggle } from '@/components/checkBox';
 
 export const DarkModeCheckbox = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    const flyController = new (FlyController as any)({});
+    const spiderController = new (SpiderController as any)({});
+    if (!isDarkMode) {
+      flyController.reset();
+      spiderController.reset();
+    } else {
+      flyController.end();
+      spiderController.end();
+    }
+
+    return () => {
+      flyController.end();
+      spiderController.end();
+    };
+  }, [isDarkMode]);
 
   const initializeDarkMode = () => {
     const savedMode = localStorage.getItem('darkMode') || 'true';
@@ -24,19 +43,11 @@ export const DarkModeCheckbox = () => {
   }, []);
 
   return (
-    <div className="flex items-center space-x-2 text-[#121212] dark:text-white">
-      <Checkbox
-        id="darkMode"
-        className="dark:bg-transparent border-none text-[#121212] dark:text-white bg-[#121212]"
-        onCheckedChange={checked => toggleDarkMode(!!checked)}
-        checked={isDarkMode}
-      />
-      <label
-        htmlFor="darkMode"
-        className="text-2xl font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-      >
-        Enable Dark Mode
-      </label>
-    </div>
+    <CheckBoxToggle
+      id="darkMode"
+      description="Enable Dark Mode"
+      checked={isDarkMode}
+      onCheckedChange={toggleDarkMode}
+    />
   );
 };
