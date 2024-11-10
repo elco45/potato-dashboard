@@ -105,11 +105,13 @@ export const Dashboard = () => {
 
   return (
     <div>
-      <div className="w-full flex justify-end bg-[#121212] py-4">
-        <button className="mx-8 text-lg cursor-pointer" onClick={() => navigate(`/${n ? '?n=1' : ''}`)}>
-          Logout
-        </button>
-      </div>
+      {!isBsod ? (
+        <div className="w-full flex justify-end bg-[#121212] py-4">
+          <button className="mx-8 text-lg cursor-pointer" onClick={() => navigate(`/${n ? '?n=1' : ''}`)}>
+            Logout
+          </button>
+        </div>
+      ) : null}
       {!isTimerActive && !isBsod && (
         <motion.button
           animate={{
